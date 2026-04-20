@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct ConsumptionTrackerApp: App {
@@ -13,5 +14,6 @@ struct ConsumptionTrackerApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: DailyRecord.self)//create storage
     }
 }
