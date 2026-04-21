@@ -12,6 +12,8 @@ struct ContentView: View {
     @Query var records : [DailyRecord]// fetch record from database
     @Environment(\.modelContext) var modelContext
     
+    @State private var showingAddForm: Bool = false
+    
     var body: some View {
         NavigationStack{
             List{
@@ -27,17 +29,18 @@ struct ContentView: View {
             }
             .navigationTitle("History")
             .toolbar{
-                Button("Add Test Day"){
-                    addTestRecord()
+                ToolbarItem(placement: .topBarTrailing){
+                    Button(action:{
+                        showingAddForm = true
+                    }){
+                        Image(systemName: "plus")
+                    }
                 }
             }
+            .sheet(isPresented: $showingAddForm){//sliding screen
+                AddRecordView()
+            }
         }
-    }
-    func addTestRecord(){
-        let newRecord = DailyRecord(date: Date.now, waterConsumed: 250, caloriesConsumed: 500)
-        
-            modelContext.insert(newRecord)
-        try? modelContext.save()
     }
 }
 
