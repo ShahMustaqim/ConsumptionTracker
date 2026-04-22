@@ -12,36 +12,95 @@ struct ContentView: View {
     @Query var records : [DailyRecord]// fetch record from database
     @Environment(\.modelContext) var modelContext
     
-    @State private var showingAddForm: Bool = false
+    @AppStorage("waterTarget") var waterTarget: Int = 2000
+    @AppStorage("calorieTarget") var calorieTarget: Int = 2000
+    @State private var showingSettings: Bool = false
+    
+    @State private var showingAddForm = false
+    @StateObject var hkManager = HealthKitManager()
     
     var body: some View {
         NavigationStack{
             List{
+                Section{
+                    NavigationLink(destination: ChartView()){
+                        HStack{
+                            Image(systemName:"chart.bar.fill")
+                                .foregroundStyle(.blue)
+                            Text("View Progress Charts")
+                                .font(.headline)
+                        }
+                    }
+                }
+                Section("Today's Activity") {
+                    HStack {
+                        Image(systemName: "figure.walk")
+                            .foregroundStyle(.green)
+                        Text("Steps Taken:")
+                        Spacer()
+                        // Display the steps from the manager, formatted cleanly
+                        Text("\(hkManager.todaySteps, specifier: "%.0f")")
+                            .bold()
+                    }
+                }
                 ForEach(records){ record in //looped thru every saved day
                     VStack(alignment: .leading){
                         Text(record.date, format: .dateTime.month().day())
                             .font(.headline)
                         
-                        Text("Water: \(record.waterConsumed) mL | Food: \(record.caloriesConsumed) kcal")
-                            .foregroundStyle(.secondary)
+                        Text("Water: \(record.waterConsumed) / \(waterTarget) mL")
+                            .foregroundStyle(record.waterConsumed >= waterTarget ? .green: .secondary)
+                        
+                        Text("Food: \(record.caloriesConsumed) / \(calorieTarget) kcal")
+                            .foregroundStyle(record.caloriesConsumed >= calorieTarget ? .green: .secondary)
                     }
                 }
+                .onDelete(perform: deleteRecord)
             }
+            
             .navigationTitle("History")
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing){
-                    Button(action:{
-                        showingAddForm = true
-                    }){
-                        Image(systemName: "plus")
+                    HStack{
+                        Button(action:{
+                            showingSettings = true
+                        }){
+                            Image(systemName:"gear")
+                        }
+                            
+                        Button(action:{
+                            showingAddForm = true
+                        }){
+                            Image(systemName: "plus")
+                        }
                     }
+                    
                 }
             }
             .sheet(isPresented: $showingAddForm){//sliding screen
                 AddRecordView()
+                
+            }
+            .sheet(isPresented:$showingSettings){
+                SettingsView()
+                
+            }
+            .onAppear {
+                hkManager.requestAuthorization()
+                
             }
         }
     }
+    // This function handles the swipe-to-delete action
+        func deleteRecord(offsets: IndexSet) {
+            for index in offsets {
+                // Find the exact record the user swiped on and delete it
+                let recordToDelete = records[index]
+                modelContext.delete(recordToDelete)
+            }
+            // Save the database after deleting
+            try? modelContext.save()
+        }
 }
 
 #Preview {
