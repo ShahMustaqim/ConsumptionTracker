@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+import SwiftData//so the file can access the database
 
 @main
 struct ConsumptionTrackerApp: App {
@@ -14,6 +14,7 @@ struct ConsumptionTrackerApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: DailyRecord.self)//create storage
+        //container creation
+        .modelContainer(for: DailyRecord.self)
     }
 }
