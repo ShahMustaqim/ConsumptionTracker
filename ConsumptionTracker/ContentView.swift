@@ -11,7 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Query var records : [DailyRecord]// fetch record from database
     @Environment(\.modelContext) var modelContext
-    
+
+    //AppStorage variables to read targets
     @AppStorage("waterTarget") var waterTarget: Int = 2000
     @AppStorage("calorieTarget") var calorieTarget: Int = 2000
     @State private var showingSettings: Bool = false
@@ -38,7 +39,6 @@ struct ContentView: View {
                             .foregroundStyle(.green)
                         Text("Steps Taken:")
                         Spacer()
-                        // Display the steps from the manager, formatted cleanly
                         Text("\(hkManager.todaySteps, specifier: "%.0f")")
                             .bold()
                     }
@@ -47,7 +47,7 @@ struct ContentView: View {
                     VStack(alignment: .leading){
                         Text(record.date, format: .dateTime.month().day())
                             .font(.headline)
-                        
+                        //coloured pgrogression
                         Text("Water: \(record.waterConsumed) / \(waterTarget) mL")
                             .foregroundStyle(record.waterConsumed >= waterTarget ? .green: .secondary)
                         
@@ -55,6 +55,7 @@ struct ContentView: View {
                             .foregroundStyle(record.caloriesConsumed >= calorieTarget ? .green: .secondary)
                     }
                 }
+                //delete operation
                 .onDelete(perform: deleteRecord)
             }
             
@@ -85,20 +86,21 @@ struct ContentView: View {
                 SettingsView()
                 
             }
+            //trigger healthKit permission
             .onAppear {
                 hkManager.requestAuthorization()
                 
             }
         }
     }
-    // This function handles the swipe-to-delete action
+    //the swipe to delete action
         func deleteRecord(offsets: IndexSet) {
             for index in offsets {
-                // Find the exact record the user swiped on and delete it
+                //find the exact record the user swiped on and delete it
                 let recordToDelete = records[index]
                 modelContext.delete(recordToDelete)
             }
-            // Save the database after deleting
+            //save the database after deleting
             try? modelContext.save()
         }
 }
