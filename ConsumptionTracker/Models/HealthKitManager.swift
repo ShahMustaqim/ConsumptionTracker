@@ -11,19 +11,19 @@ import SwiftUI
 import Combine
 
 class HealthKitManager: ObservableObject {
-    // 1. The bridge to Apple Health
+    //variable to reference the HealthKitStore
     let healthStore = HKHealthStore()
     
-    // 2. The variable that will hold our steps so the screen can see it
+    //variable that will hold our steps
     @Published var todaySteps: Double = 0.0
     
-    // 3. The function to ask the user for permission
+    //ask the user for permission
     func requestAuthorization() {
-        // We only want to read the step count
+        //only read the step count
         guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else { return }
         let readTypes: Set = [stepType]
         
-        // Ask HealthKit for permission
+        //ask HealthKit for permission
         healthStore.requestAuthorization(toShare: nil, read: readTypes) { success, error in
             if success {
                 print("Permission granted!")
@@ -34,7 +34,7 @@ class HealthKitManager: ObservableObject {
         }
     }
     
-    // 4. The function to actually get the steps for today
+    //function to get the steps for today
     func fetchTodaySteps() {
         guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else { return }
         
@@ -48,7 +48,7 @@ class HealthKitManager: ObservableObject {
                 return
             }
             
-            // Update our variable on the main screen thread
+            //update our variable on the main screen thread
             DispatchQueue.main.async {
                 self.todaySteps = sum.doubleValue(for: HKUnit.count())
             }
