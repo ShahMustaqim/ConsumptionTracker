@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    //permanently saves these numbers to device settings
     @AppStorage("waterTarget") var waterTarget: Int = 2000
     @AppStorage("calorieTarget") var calorieTarget:Int = 2000
     
