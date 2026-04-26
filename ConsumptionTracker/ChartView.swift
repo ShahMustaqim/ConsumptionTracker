@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftData
-import Charts
+import Charts// for graph
 
 struct ChartView: View {
     //fetch from database
@@ -18,9 +18,9 @@ struct ChartView: View {
                 .font(.headline)
                 .padding(.top)
             
-            Chart{
+            Chart{//chart creation
                 ForEach(records){record in
-                //do bars
+                //create bars for barchart
                     BarMark(
                         x: .value("Date", record.date, unit: .day),
                         y: .value("Calories", record.caloriesConsumed)
