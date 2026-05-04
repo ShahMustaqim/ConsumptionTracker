@@ -10,7 +10,7 @@ import HealthKit
 import SwiftUI
 import Combine
 
-class HealthKitManager: ObservableObject {
+class HealthKitManager: ObservableObject { //for ContentView to listen for updates
     //variable to reference the HealthKitStore
     let healthStore = HKHealthStore()
     
