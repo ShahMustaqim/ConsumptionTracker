@@ -10,14 +10,16 @@ import SwiftData
 
 struct ContentView: View {
     @Query var records : [DailyRecord]// fetch record from database
-    @Environment(\.modelContext) var modelContext
+    @Environment(\.modelContext) var modelContext //grab the swiftdata database manager
 
     //AppStorage variables to read targets
     @AppStorage("waterTarget") var waterTarget: Int = 2000
     @AppStorage("calorieTarget") var calorieTarget: Int = 2000
-    @State private var showingSettings: Bool = false
     
+    @State private var showingSettings: Bool = false
     @State private var showingAddForm = false
+
+    //creates a new instance
     @StateObject var hkManager = HealthKitManager()
     
     var body: some View {
